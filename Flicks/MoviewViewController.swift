@@ -212,7 +212,7 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
         let overview=movie["overview"] as! String
         
         let baseUrl="http://image.tmdb.org/t/p/w342"
-        let posterPath=movie["poster_path"] as! String
+        if let posterPath=movie["poster_path"]  as? String{
         let imageUrl=NSURL(string:baseUrl+posterPath)
        // cell.posterView.setImageWithURL(imageUrl!);
         let imageRequest=NSURLRequest(URL:imageUrl!)
@@ -237,13 +237,13 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
             failure: { (imageRequest, imageResponse, error) -> Void in
                 // do something for the failure condition
         })
-        
+        }
         //! -> positive that it is not nil
         //only cells that are on the screen
        // cell.textLabel!.text=title
         cell.titleLabel.text=title
         cell.overview.text=overview
-        
+        CGSizeMake(320, 320)
 //        let maxHeight : CGFloat = 10000
 //        let rect = cell.attributedText?.boundingRectWithSize(CGSizeMake(maxWidth, maxHeight),
 //            options: .UsesLineFragmentOrigin, context: nil)
@@ -294,7 +294,14 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         self.searchBar.endEditing(true);
     }
-    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let cell = sender as! UITableViewCell
+        let indexPath=tableView.indexPathForCell(cell)
+        let movie=movies![indexPath!.row]
+        let dVC=segue.destinationViewController as! DetailViewController
+        dVC.movie = movie
+        print(movie)
+    }
  
 
 }

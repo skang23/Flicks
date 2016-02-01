@@ -184,7 +184,7 @@ class CollectionViewController: UIViewController,UICollectionViewDataSource, UIS
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         
         if (segue.identifier == "toMovieView") {
-            var detailVC = segue.destinationViewController as! MoviewViewController;
+            let detailVC = segue.destinationViewController as! MoviewViewController;
             
            // let cell=sender.view as! CollectionViewCell
             //detailVC.selectedRow=cell.tag
