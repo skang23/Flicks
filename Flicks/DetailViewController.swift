@@ -20,18 +20,31 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
      //   print(movie)
-
         //scrollView.frame;
         super.viewDidLoad()
         self.scrollView.contentSize=CGSize(width:self.scrollView.frame.size.width, height:infoView.frame.origin.y+infoView.frame.size.height)
-        
+        self.infoView.center.x = -self.scrollView.frame.size.width
+        self.infoView.center.y = self.view.center.y/2
+         self.scrollView.contentSize=CGSize(width:self.scrollView.frame.size.width, height:self.posterImageView.frame.size.height)
+        self.view.backgroundColor = UIColor.blackColor()
         titleLabel.text = movie["title"] as? String
        overviewLabel.text = movie["overview"] as? String
         overviewLabel.sizeToFit()
+       // CGSize size1 = CGSizeMake(titleLabel.text.frame.width+overviewLabel.frame.width, titleLabel.text.frame.height+overviewLabel.frame.height)
+        infoView.sizeThatFits( CGSizeMake(titleLabel.frame.width+overviewLabel.frame.width, titleLabel.frame.height+overviewLabel.frame.height+60))
         let baseUrl="http://image.tmdb.org/t/p/w342"
         if let posterPath=movie["poster_path"]  as? String{
             let imageUrl=NSURL(string:baseUrl+posterPath)
                 self.posterImageView.setImageWithURL(imageUrl!)
+            self.posterImageView.sizeThatFits(CGSizeMake(self.posterImageView.frame.width, self.posterImageView.frame.height))
+            
+            var swipeRight = UISwipeGestureRecognizer(target: self, action: "respondToSwipeGesture:")
+            swipeRight.direction = UISwipeGestureRecognizerDirection.Right
+            self.view.addGestureRecognizer(swipeRight)
+            
+            var swipeLeft = UISwipeGestureRecognizer(target: self, action: "respondToSwipeGesture:")
+            swipeLeft.direction = UISwipeGestureRecognizerDirection.Left
+            self.view.addGestureRecognizer(swipeLeft)
 //            let imageRequest=NSURLRequest(URL:imageUrl!)
 //            posterImageView.setImageWithURLRequest(
 //                imageRequest,
@@ -64,6 +77,35 @@ class DetailViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    func respondToSwipeGesture(gesture: UIGestureRecognizer) {
+        
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            
+            
+            switch swipeGesture.direction {
+            case UISwipeGestureRecognizerDirection.Right:
+                print("Swiped right")
+                UIView.animateWithDuration(0.5, animations: {
+                    self.infoView.center.x = self.view.center.x
+                })
+            case UISwipeGestureRecognizerDirection.Down:
+                print("Swiped down")
+            case UISwipeGestureRecognizerDirection.Left:
+                print("Swiped left")
+                UIView.animateWithDuration(0.5, animations: {
+                    self.infoView.center.x = -self.view.center.x
+                })
+            case UISwipeGestureRecognizerDirection.Up:
+                print("Swiped up")
+            default:
+                break
+            }
+        }
+    }
+    
+    @IBAction func scrollOverview(sender: AnyObject) {
+        print("pan!")
+    }
     
     /*
     // MARK: - Navigation

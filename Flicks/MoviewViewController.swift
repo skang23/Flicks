@@ -21,6 +21,7 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var networkError: UILabel!
     var movies:[NSDictionary]?
     var selectedRow = -1
+    var endpoint: String!
     @IBAction func touchDown(sender: AnyObject) {
         touchButton.imageView!.image=UIImage(named: "blue");
     }
@@ -70,7 +71,7 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
     }
     func loadDataFromNetwork() {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let url = NSURL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
         let request = NSURLRequest(
             URL: url!,
             cachePolicy: NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData,
@@ -131,7 +132,7 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
 
     func refreshControlAction(refreshControl: UIRefreshControl) {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let url = NSURL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
         let request = NSURLRequest(
             URL: url!,
             cachePolicy: NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData,
@@ -176,7 +177,7 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.tableView.backgroundColor=UIColor.blackColor()
         loadDataFromNetwork()
         searchBar.delegate=self;
         
@@ -187,7 +188,7 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource=self;
         tableView.delegate=self;
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let url = NSURL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
        
         
     }
@@ -209,8 +210,14 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
         let cell=tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
         let movie=filteredData![indexPath.row]
         let title=movie["title"] as! String
-        let overview=movie["overview"] as! String
-        
+        print(movie["vote_average"])
+       // let overview = movie["overview"] as! String
+        let overview = String(format: "Ratings: %.2f\nPopularity: %d", movie["vote_average"] as! Double, movie["popularity"] as! Int)
+      //  cell.selectionStyle = .None
+        cell.selectionStyle = .Gray
+      //  let backgroundView = UIView()
+       // backgroundView.backgroundColor = UIColor.redColor()
+       // cell.selectedBackgroundView = backgroundView
         let baseUrl="http://image.tmdb.org/t/p/w342"
         if let posterPath=movie["poster_path"]  as? String{
         let imageUrl=NSURL(string:baseUrl+posterPath)
@@ -224,6 +231,7 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
                 // imageResponse will be nil if the image is cached
                 if imageResponse != nil {
                  //   print("Image was NOT cached, fade in image")
+                    
                     cell.posterView.alpha = 0.0
                     cell.posterView.image = image
                     UIView.animateWithDuration(0.3, animations: { () -> Void in
@@ -242,8 +250,10 @@ class MoviewViewController: UIViewController, UITableViewDataSource, UITableView
         //only cells that are on the screen
        // cell.textLabel!.text=title
         cell.titleLabel.text=title
-        cell.overview.text=overview
-        CGSizeMake(320, 320)
+        //String(format: <#T##String#>, arguments: <#T##[CVarArgType]#>)
+       // String(format:"Rating: %f", overview)
+        cell.overview.text = overview
+
 //        let maxHeight : CGFloat = 10000
 //        let rect = cell.attributedText?.boundingRectWithSize(CGSizeMake(maxWidth, maxHeight),
 //            options: .UsesLineFragmentOrigin, context: nil)
